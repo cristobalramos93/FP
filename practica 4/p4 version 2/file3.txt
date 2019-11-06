@@ -1,0 +1,2 @@
+Este archivo tiene dos enlaces.
+<indice1.txt>

@@ -1,0 +1,5 @@
+Archivo 2 con saludos 
+hola adios 
+<0raiz.txt>
+<3file.txt>
+<1file.txt>

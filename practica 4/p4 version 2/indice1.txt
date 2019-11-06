@@ -1,0 +1,1 @@
+Esto es una prueba. El archivo raiz tiene tres enlaces <file2.txt>

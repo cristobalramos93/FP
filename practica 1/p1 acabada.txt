@@ -1,0 +1,429 @@
+//Jaime Viejo Martinez
+//Cristobal Ramos Laina
+
+#include <iostream>
+#include <string>
+#include <fstream>
+
+/*
+- en las funciones de arriba poner lo que hace cada una de forma resumida que entra y que sale
+- variables globales NO permitidas, constantes si
+- usar los parametros
+- que no haya codigo repetido, llamar a las funcniones necesarias
+- las funcniones no pueden acabar con break (solo en los switch), solo se puede salir de un bucle cuando se salga del bucle.
+- los bucles si se saben el numero de bucles se usan un for si no lo sabemos de antemano tenemos que poner un while.
+- hacer funciones cortas
+- no se va a combrobar que se introduzaca una letra soo numeros negativos o fuera de rango
+- suponesmos que el fichero esta bien escrito
+*/
+
+using namespace std;
+const int diasDeLaSema = 7;
+const int anyoUno = 1900;
+int solicitaAnyo(); //pide un año teniendo en cuenta las restricciones
+int solicitaMes(); //pide un mes teniendo en cuenta las restricciones
+int solicitaDia(int mes, int anyo); //pide un dia teniendo en cuenta las restricciones
+long int diasTranscurridos(int dia, int mes, int anyo); //calcula la suma de los dias que han pasado dada una fecha concreta
+long int diasAnyosCompletos(int anyo); //calcula los dias que han pasado segun el año partiendo de 1900
+int diasEsteAnyo(int dia, int mes, int anyo); //calcula los dias que han pasado dada una fecha concreta de un año concreto
+int contarBisiestos(int anyoInicio, int anyoFinal); //cuenta los años bisiesto desde un año dado hasta el otro
+int diasMes(int mes, int anyo); //calcula los dias que tiene el mes de un año concreto
+bool esBisiesto(int anyo); //comprueba que un año dado sea o no bisiesto
+int diaSemana(long int suma); //calcula el dia de la semana que es entre 0 y 6
+string nombreDia(int representacionDia); //transforma el resultado de diaSemana de numeros a letras (dia de la semana)
+void menu(); //es el menu
+void primerDomingoAnyo(); //calcula el primer domingo del año solicitado
+string diaDeLaSemana(); // hace la version 1
+int primerDomingoMes(int mes, int anyo); // calcula el primer domingo del mes k le llega por parametro
+void domingosAnyo(int anyo); // con la funcion primerDomingoMes() y covertir(), muestra todos los domingos del año
+string convertir(int mes); // convierte los numeros de los meses en letra, 1 = enero, 2 = febrero...
+bool puentes(); //busca los martes y jueves y los escribe en puentes.txt
+
+int main() {
+	menu();
+	system("pause");
+}
+
+int solicitaAnyo() {
+	int anyo;
+	cout << "Introduce un anyo: " << endl;
+	cin >> anyo;
+	while (anyo < anyoUno) {
+		cout << "error el anyo tiene que ser 1900 o mayor." << endl << "Introduce un anyo: " << endl;
+		cin >> anyo;
+	}
+	return anyo;
+}
+
+int solicitaMes() {
+	int mes;
+	cout << "Introduce el numero del mes: " << endl;
+	cin >> mes;
+	while (mes < 1 || mes > 12) {
+		cout << "error el mes tiene que estar entre 1 y 12." << endl << "Introduce el numero de mes: " << endl;
+		cin >> mes;
+	}
+	return mes;
+}
+
+int solicitaDia(int mes, int anyo) {
+	int dia;
+	cout << "Introduce el numero del dia: " << endl;
+	cin >> dia;
+	if ((mes == 1) || (mes == 3) || (mes == 5) || (mes == 7) || (mes == 8) || (mes == 10) || (mes == 12)) {
+		while (dia > 31 || dia < 1) {
+			cout << "error, el mes que has escogido tiene 31 dias." << endl << "Introduce el numero del dia (entre 1 y 31): " << endl;
+			cin >> dia;
+		}
+	}
+	if ((mes == 4) ||(mes == 6) ||(mes == 9) || (mes == 11)) {
+		while (dia > 30 || dia < 1) {
+			cout << "error, el mes que has escogido tiene 30 dias." << endl << "Introduce el numero del dia (entre 1 y 30): " << endl;
+			cin >> dia;
+		}
+	}
+	if (mes == 2) {
+		while ((dia > 28 || dia < 1) && (!esBisiesto(anyo))) {
+			cout << "error, Febrero solo tiene 28 dias." << endl << "Introduce el numero del dia (entre 1 y 28): " << endl;
+			cin >> dia;
+		}
+	}
+	if (mes == 2) {
+		while ((dia > 29 || dia < 1) && esBisiesto(anyo)) {
+			cout << "error, Febrero solo tiene 29 dias." << endl << "Introduce el numero del dia (entre 1 y 29): " << endl;
+			cin >> dia;
+		}
+	}
+
+	return dia;
+}
+
+long int diasTranscurridos(int dia, int mes, int anyo) {
+	long suma;
+	suma = diasAnyosCompletos(anyo);
+	suma += diasEsteAnyo(dia, mes, anyo);
+	return suma;
+}
+
+long int diasAnyosCompletos(int anyo) {
+	long suma = 0, n, bisiestos;
+	bisiestos = contarBisiestos(anyoUno, anyo); // lo hace bn
+	n = anyo - anyoUno; // te cuenta los años transuccridos
+	suma = n * 365;
+	suma += bisiestos;
+	return suma;
+}
+
+int diasEsteAnyo(int dia, int mes, int anyo) {
+	long suma = 0;
+	if (mes == 1) {
+		suma = dia - 1;
+	}
+	if (mes == 2) {
+		suma = 31 + dia - 1;
+	}
+	if (mes == 3) {
+		suma = 59 + dia -1;
+	}
+	if (mes == 4) {
+		suma = 90 + dia -1;
+	}
+	if (mes == 5) {
+		suma = 120 + dia - 1;
+	}
+	if (mes == 6) {
+		suma = 151 + dia - 1;
+	}
+	if (mes == 7) {
+		suma += 181 + dia - 1;
+	}
+	if (mes == 8) {
+		suma = 212 + dia - 1;
+	}
+	if (mes == 9) {
+		suma = 243 + dia - 1;
+	}
+	if (mes == 10) {
+		suma = 273 + dia - 1;
+	}
+	if (mes == 11) {
+		suma = 304 + dia - 1;
+	}
+	if (mes == 12) {
+		suma = 334 + dia - 1;
+	}
+	if (mes > 2 && esBisiesto(anyo)) {
+		suma++;
+	}
+	return suma;
+}
+
+
+int contarBisiestos(int anyoInicio, int anyoFinal) {
+	int bisiestos = 0;
+	int cuenta;
+	cuenta = anyoFinal - anyoInicio;
+	int nuevo = anyoInicio;
+	for (int n = 0; n < cuenta; n++) {
+
+		if (esBisiesto(nuevo)) {
+			bisiestos++;
+		}
+		nuevo++;
+	}
+	return bisiestos;
+}
+
+int diasMes(int mes, int anyo) {
+	int diasDelMes;
+	if (mes == 1 || 3 || 5 || 7 || 8 || 10 || 12) {
+		diasDelMes = 31;
+	}
+	if (mes == 4 || 6 || 9 || 11) {
+		diasDelMes = 30;
+	}
+	if (mes == 2) {
+		if (esBisiesto(anyo)) {
+			diasDelMes = 29;
+		}
+		else {
+			diasDelMes = 28;
+		}
+	}
+	return diasDelMes;
+}
+
+bool esBisiesto(int anyo) {
+	if (anyo % 4 == 0 && (anyo % 100 != 0 || anyo % 400 == 0)) {
+		return true;
+	}
+	else return false;
+
+}
+
+int diaSemana(long int suma) {
+	int representacionDia;
+	representacionDia = suma % 7;
+	return representacionDia;
+}
+
+string nombreDia(int representacionDia) {
+	string nombre;
+	if (representacionDia == 0) {
+		nombre = "lunes";
+	}
+	if (representacionDia == 1) {
+		nombre = "martes";
+	}
+	if (representacionDia == 2) {
+		nombre = "miercoles";
+	}
+	if (representacionDia == 3) {
+		nombre = "jueves";
+	}
+	if (representacionDia == 4) {
+		nombre = "viernes";
+	}
+	if (representacionDia == 5) {
+		nombre = "sabado";
+	}
+	if (representacionDia == 6) {
+		nombre = "domingo";
+	}
+	return nombre;
+}
+
+string diaDeLaSemana() { // es una funcion nueva k nos la pedian, simplemente es la version 1
+	int anyo = 0, mes = 0, dia = 0, suma = 0, representacionDia = 0, anyoDomingo = 0;
+	string letraDia;
+
+	anyo = solicitaAnyo();
+	mes = solicitaMes();
+	dia = solicitaDia(mes, anyo);
+	suma = diasTranscurridos(dia, mes, anyo);
+	representacionDia = diaSemana(suma);
+	letraDia = nombreDia(representacionDia);
+	return letraDia;
+}
+
+
+void primerDomingoAnyo() {
+	int nuevoMes;
+	int anyoDomingo, suma, representacionDia, nuevo;
+	anyoDomingo = solicitaAnyo();
+	suma = diasTranscurridos(1, 1, anyoDomingo);
+	representacionDia = diaSemana(suma); 
+	nuevo = diasDeLaSema - representacionDia; // 7 - el dia de el 1 de enero
+	cout << "el primer domingo del anyo " << anyoDomingo << " es el dia " << nuevo << " de Enero" << endl;
+}
+
+
+int primerDomingoMes(int mes, int anyo) {
+	int suma, representacionDia, primerDomingoDelMes;
+	suma = diasTranscurridos(1, mes, anyo);
+	representacionDia = diaSemana(suma);
+	primerDomingoDelMes = diasDeLaSema - representacionDia;
+	return primerDomingoDelMes;
+
+}
+
+void domingosAnyo(int anyo) { //esto es una rayada de cojones para calcular todos los domingos d el año
+	//lo que hace es un bucle for kn los 12 meses del año, en cada mes ve en k dia empieza el primer domingo y va sumando 7 asta k ve k si suma 7 más se sale del mes
+	int anioA;
+	int domingos = 0;
+	int primerDia;
+	string a;
+	cout << "Domingos de " << anyo << endl;
+	for (int n = 1; n < 13; n++) {
+		a = convertir(n);
+		primerDia = primerDomingoMes(n, anyo);
+		cout << primerDia << " de " << a << endl;
+		domingos++;
+		cout << diasDeLaSema + primerDia << " de " << a << endl;
+		domingos++;
+		cout << (2 * diasDeLaSema) + primerDia << " de " << a << endl;
+		domingos++;
+		cout << (3 * diasDeLaSema) + primerDia << " de " << a << endl;
+		domingos++;
+		if (((3 * diasDeLaSema) + primerDia) < 25 && ((n == 1) || (n == 3) || (n == 5) || (n == 7) || (n == 8) || (n == 10) || (n == 12))) {
+			cout << (4 * diasDeLaSema) + primerDia << " de " << a << endl;
+			domingos++;
+		}
+		if (((3 * diasDeLaSema) + primerDia) < 24 && ((n == 4) || (n == 6) || (n == 9) || (n == 11))) {
+			cout << (4 * diasDeLaSema) + primerDia << " de " << a << endl;
+			domingos++;
+		}
+
+		if (((3 * diasDeLaSema) + primerDia) <= 22 && ((n == 2) && esBisiesto(anyo))) {
+			cout << (4 * diasDeLaSema) + primerDia << " de " << a << endl;
+			domingos++;
+
+		}
+
+		if (((3 * diasDeLaSema) + primerDia) <= 21 && ((n == 2) && !esBisiesto(anyo))) {
+			cout << (4 * diasDeLaSema) + primerDia << " de " << a << endl;
+			domingos++;
+		}
+	}
+	cout << "Numero total de Domingos " << domingos << endl;
+}
+
+
+
+string convertir(int mes) { //aqui le llega la n del for de la funcion de arriba y lo pasa a letra
+	string a;
+	if (mes == 1) {
+		a = "enero";
+	}
+	if (mes == 2) {
+		a = "febrero";
+	}
+	if (mes == 3) {
+		a = "marzo";
+	}
+	if (mes == 4) {
+		a = "abril";
+	}
+	if (mes == 5) {
+		a = "mayo";
+	}
+	if (mes == 6) {
+		a = "junio";
+	}
+	if (mes == 7) {
+		a = "julio";
+	}
+	if (mes == 8) {
+		a = "agosto";
+	}
+	if (mes == 9) {
+		a = "septiembre";
+	}
+	if (mes == 10) {
+		a = "octubre";
+	}
+	if (mes == 11) {
+		a = "noviembre";
+	}
+	if (mes == 12) {
+		a = "diciembre";
+	}
+	return a;
+}
+
+void menu() { 
+	int a;
+	int opcion;
+	string dia;
+	cout << "Elige una opcion: " << endl;
+	cout << "1 - Calcular el dia de la semana para una fecha dada " << endl;
+	cout << "2 - Obtener la fecha correspondiente al primer domingo de un anyo " << endl;
+	cout << "3 - Obtener los domingos de un anyo" << endl;
+	cout << "4 - Obtener los posibles puentes de un anyo" << endl;
+	cout << "0 - Salir" << endl;
+	cin >> opcion;
+	switch (opcion) {
+	case 0:
+		cout << "adiooos" << endl;
+		break;
+	case 1:
+		dia = diaDeLaSemana();
+		cout << "La fecha que has seleccionado es " << dia << endl;
+		menu();
+		break;
+
+	case 2: primerDomingoAnyo();
+		menu();
+		break;
+
+	case 3:
+		a = solicitaAnyo();
+		domingosAnyo(a);
+		menu();
+		break;
+
+
+	case 4:
+		puentes();
+		menu();
+		break;
+	}
+}
+
+bool puentes() {
+	int anyo, mes, dia, suma, representacionDia;
+	string letraDia;
+	ifstream archivo;
+	ofstream escribir;
+	escribir.open("puentes.txt");
+	archivo.open("fiestas.txt");
+	if (archivo.is_open()) {
+		archivo >> anyo;
+			escribir << anyo << endl;
+			archivo >> dia;
+			archivo >> mes;
+			while (dia != 0 && mes!= 0) {
+
+				suma = diasTranscurridos(dia, mes, anyo);
+				representacionDia = diaSemana(suma); // estas dos funciones calcula el numero de el dia de la semana k es
+
+				if (representacionDia == 1) { // si es 1 (martes) escribe xk es puente
+					escribir << dia << " ";
+					escribir << mes << " martes"<<  endl;
+				}
+				if (representacionDia == 3) { // 3 (jueves) escribe xk es puentes
+					escribir << dia << " ";
+					escribir << mes << " jueves" << endl;
+				}
+				archivo >> dia;
+				archivo >> mes;
+
+
+			}
+		
+		escribir <<"0 0" << endl; //falta lo k pone al final del archivo XXX nombre del dia, no lo entiendo
+		cout << "metete en el archivo puentes y los veras!!" << endl;
+	}
+	else cout << "Error al abrir el archivo " << endl;
+	return 0;
+}

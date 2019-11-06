@@ -1,0 +1,2 @@
+Este archivo tiene un enlace. 
+<file1.txt>

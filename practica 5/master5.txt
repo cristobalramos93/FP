@@ -1,0 +1,5 @@
+Este archivo tiene enlaces a todos los demas
+<1file.txt>,<2file.txt>;<0raiz.txt>...<3file.txt><4file.txt>
+adios...
+
+

@@ -1,0 +1,4 @@
+Esto es una prueba. El archivo raiz tiene tres enlaces.
+<file1.txt>
+<file2.txt>
+<file3.txt>

@@ -1,0 +1,535 @@
+{\rtf1\ansi\ansicpg1252\cocoartf1504\cocoasubrtf760
+{\fonttbl\f0\fswiss\fcharset0 Helvetica;}
+{\colortbl;\red255\green255\blue255;\red0\green128\blue0;\red128\green128\blue128;\red163\green21\blue21;
+\red0\green0\blue255;\red43\green145\blue175;\red0\green128\blue128;}
+{\*\expandedcolortbl;;\csgenericrgb\c0\c50196\c0;\csgenericrgb\c50196\c50196\c50196;\csgenericrgb\c63922\c8235\c8235;
+\csgenericrgb\c0\c0\c100000;\csgenericrgb\c16863\c56863\c68627;\csgenericrgb\c0\c50196\c50196;}
+\paperw11900\paperh16840\margl1440\margr1440\vieww10800\viewh8400\viewkind0
+\pard\tx560\tx1120\tx1680\tx2240\tx2800\tx3360\tx3920\tx4480\tx5040\tx5600\tx6160\tx6720\pardirnatural\partightenfactor0
+
+\f0\fs19 \cf2 //JAIME VIEJO MART\'d5NEZ\cf0 \
+\cf2 //CRIST\'94BAL RAMOS LAINA\cf0 \
+\cf3 #include\cf0  \cf4 <string>\cf0 \
+\cf3 #include\cf0  \cf4 <iostream>\cf0 \
+\cf3 #include\cf0  \cf4 <fstream>\cf0 \
+\cf3 #include\cf0  \cf4 <iomanip>\cf0 \
+\
+\
+\
+\cf5 using\cf0  \cf5 namespace\cf0  std;\
+\cf5 const\cf0  \cf5 int\cf0  MAX_PROD = 25;\
+\cf5 const\cf0  \cf5 int\cf0  PROD_NULO = 0;\
+\cf5 const\cf0  \cf5 int\cf0  CENTINELA = -1;\
+\cf5 typedef\cf0  \cf5 int\cf0  \cf6 tArray\cf0 [MAX_PROD];\
+\
+\cf5 void\cf0  leerFilaFich(\cf6 ifstream\cf0  &fich, \cf6 tArray\cf0  fila, \cf5 int\cf0  &tam); \cf2 //cargar el archivo\cf0 \
+\cf5 void\cf0  escribirFilaFich(\cf6 ofstream\cf0  &fich, \cf5 const\cf0  \cf6 tArray\cf0  fila, \cf5 int\cf0  tam); \cf2 //sobreescribe el archivo\cf0 \
+\cf5 void\cf0  mostrarFila(\cf5 const\cf0  \cf6 tArray\cf0  fila, \cf5 int\cf0  tam); \cf2 //muestra como queda el array al desplazar o arrastrar\cf0 \
+\cf5 bool\cf0  esPosValida(\cf5 int\cf0  tam, \cf5 int\cf0  pos); \cf2 // si la posicion de lo desplazado por la grua esta dentro del tama\'d2o del array\cf0 \
+\cf5 bool\cf0  estaVacia(\cf5 const\cf0  \cf6 tArray\cf0  fila, \cf5 int\cf0  pos); \cf2 // comprueba si el hueco donde vas a dejar lo de la grua esta vacio\cf0 \
+\cf5 void\cf0  ejecutarGruaVO(\cf5 int\cf0  tam, \cf6 tArray\cf0  &fila, \cf5 int\cf0  &movimientos); \cf2 // usa la grua\cf0 \
+\cf5 void\cf0  ejecutarGuardarFichero(\cf5 const\cf0  \cf6 tArray\cf0  fila, \cf5 int\cf0  tam); \cf2 // guarda los cambios realizados por la grua y excavadora en el fichero\cf0 \
+\cf5 int\cf0  posHuecoLibreDir(\cf5 const\cf0  \cf6 tArray\cf0  fila, \cf5 int\cf0  tam, \cf5 int\cf0  posIni, \cf5 int\cf0  direccion); \cf2 // busca el primer hueco libre \cf0 \
+\cf5 bool\cf0  excavadora1Dir(\cf6 tArray\cf0  &fila, \cf5 int\cf0  tam, \cf5 int\cf0  posIni, \cf5 int\cf0  direccion, \cf5 int\cf0  numDespla); \cf2 // realiza el movimiente de los bloques\cf0 \
+\cf5 void\cf0  ejecutarExcavadora(\cf6 tArray\cf0  &fila, \cf5 int\cf0  tam, \cf5 int\cf0  &movimientos); \cf2 // ejecuta la excavadora\cf0 \
+\cf5 void\cf0  menu(\cf5 int\cf0  tam, \cf6 tArray\cf0  &fila, \cf5 int\cf0  &movimientos, \cf5 bool\cf0  primera); \cf2 // menu\cf0 \
+\cf5 bool\cf0  sonPosicionesPosiblesGrua(\cf5 int\cf0  tam, \cf5 int\cf0  posIni, \cf5 int\cf0  posFin, \cf5 int\cf0  posSoltar);\cf2 //devuelve posible = true si encaja en el array y si ini es menos k fin.\cf0 \
+\cf5 bool\cf0  esPosibleGrua(\cf5 const\cf0  \cf6 tArray\cf0  fila, \cf5 int\cf0  tam, \cf5 int\cf0  posIni, \cf5 int\cf0  posFin, \cf5 int\cf0  posSoltar); \cf2 //comprueba si se pisan\cf0 \
+\cf5 bool\cf0  grua(\cf6 tArray\cf0  &fila, \cf5 int\cf0  tam, \cf5 int\cf0  posIni, \cf5 int\cf0  posFin, \cf5 int\cf0  posSoltar, \cf5 int\cf0  &movimientos);\cf2 // version 3\cf0 \
+\cf5 bool\cf0  filaOrdenada(\cf5 const\cf0  \cf6 tArray\cf0  fila, \cf5 int\cf0  tam);\cf2 //Comprueba que el array quede ordenado despues de cada cambio\cf0 \
+\cf5 bool\cf0  grua_VO(\cf6 tArray\cf0  &fila, \cf5 int\cf0  tam, \cf5 int\cf0  posIni, \cf5 int\cf0  posFin, \cf5 int\cf0  posSoltar, \cf5 int\cf0  &movimientos); \cf2 // ejecuta la grua con un solo Array (fila), ya no hay auxiliar como habia en grua()\cf0 \
+\cf5 void\cf0  barraFinal(); \cf2 //solo muestra los **** despues de cada accion\cf0 \
+\cf5 int\cf0  main() \{\
+	\cf6 tArray\cf0  fila;\
+	\cf5 int\cf0  tam = 0, movimientos = 0;\
+	\cf5 bool\cf0  primera = \cf5 false\cf0 ;\
+	menu(tam, fila, movimientos, primera);\
+\
+	system(\cf4 "pause"\cf0 );\
+\}\
+\
+\cf5 void\cf0  leerFilaFich(\cf6 ifstream\cf0  &\cf3 fich\cf0 , \cf6 tArray\cf0  \cf3 fila\cf0 , \cf5 int\cf0  &\cf3 tam\cf0 ) \{\
+	\cf3 tam\cf0  = 0; \cf2 // cada vez que abras un nuevo fichero ponemos el tam a 0, es una manera de borrar el array anterior(lo sobreescribe)\cf0 \
+	\cf5 int\cf0  x;\
+	\cf3 fich\cf0  \cf7 >>\cf0  x;\
+	\cf5 while\cf0  (x != CENTINELA) \{\
+\
+		\cf3 fila\cf0 [\cf3 tam\cf0 ] = x;\
+		\cf3 tam\cf0 ++; \cf2 //el tama\'d2o del array\cf0 \
+		\cf3 fich\cf0  \cf7 >>\cf0  x;\
+	\}\
+\
+\}\
+\
+\cf5 void\cf0  escribirFilaFich(\cf6 ofstream\cf0  &\cf3 fich\cf0 , \cf5 const\cf0  \cf6 tArray\cf0  \cf3 fila\cf0 , \cf5 int\cf0  \cf3 tam\cf0 ) \{ \cf2 //OPCION 2\cf0 \
+	\cf5 for\cf0  (\cf5 int\cf0  n = 0; n < \cf3 tam\cf0 ; n++) \{\
+		\cf3 fich\cf0  \cf7 <<\cf0  \cf3 fila\cf0 [n] \cf7 <<\cf0  \cf4 " "\cf0 ;\
+	\}\
+	\cf3 fich\cf0  \cf7 <<\cf0  \cf4 "-1"\cf0 ;\
+\
+\}\
+\
+\cf5 void\cf0  mostrarFila(\cf5 const\cf0  \cf6 tArray\cf0  \cf3 fila\cf0 , \cf5 int\cf0  \cf3 tam\cf0 ) \{\
+\
+	\cf5 for\cf0  (\cf5 int\cf0  n = 0; n < \cf3 tam\cf0 ; n++) \{\
+		cout \cf7 <<\cf0  setw(2) \cf7 <<\cf0  \cf4 "|"\cf0  \cf7 <<\cf0  setw(2) \cf7 <<\cf0  \cf3 fila\cf0 [n];\
+	\}\
+\
+	cout \cf7 <<\cf0  setw(2) \cf7 <<\cf0  \cf4 "|"\cf0  \cf7 <<\cf0  endl;\
+\
+\
+	\cf5 for\cf0  (\cf5 int\cf0  n = 0; n < \cf3 tam\cf0 ; n++) \{\
+\
+		cout \cf7 <<\cf0  \cf4 "----"\cf0 ;\
+	\}\
+\
+	cout \cf7 <<\cf0  endl;\
+\
+\
+	\cf5 for\cf0  (\cf5 int\cf0  n = 0; n < \cf3 tam\cf0 ; n++) \{\
+		cout \cf7 <<\cf0  setw(2) \cf7 <<\cf0  \cf4 "|"\cf0  \cf7 <<\cf0  setw(2) \cf7 <<\cf0  n;\
+	\}\
+	cout \cf7 <<\cf0  setw(2) \cf7 <<\cf0  \cf4 "|"\cf0  \cf7 <<\cf0  endl;\
+\}\
+\
+\
+\cf5 bool\cf0  esPosValida(\cf5 int\cf0  \cf3 tam\cf0 , \cf5 int\cf0  \cf3 pos\cf0 ) \{ \cf2 //comprueba si el desplazamiento esta dentro del tama\'d2o del array\cf0 \
+\
+	\cf5 bool\cf0  valido = \cf5 false\cf0 ;\
+	\cf5 if\cf0  ((\cf3 pos\cf0  <= \cf3 tam\cf0  - 1) && (\cf3 pos\cf0  >= 0)) \{\
+		valido = \cf5 true\cf0 ;\
+	\}\
+	\cf5 return\cf0  valido;\
+\}\
+\
+\
+\cf5 bool\cf0  estaVacia(\cf5 const\cf0  \cf6 tArray\cf0  \cf3 fila\cf0 , \cf5 int\cf0  \cf3 pos\cf0 ) \{ \cf2 //comprueba si la posicion esta vacia\cf0 \
+	\cf5 bool\cf0  vacia = \cf5 false\cf0 ;\
+\
+	\cf5 if\cf0  (\cf3 fila\cf0 [\cf3 pos\cf0 ] == PROD_NULO) \{\
+		vacia = \cf5 true\cf0 ;\
+	\}\
+	\cf5 return\cf0  vacia;\
+\}\
+\
+\cf5 void\cf0  ejecutarGrua(\cf5 int\cf0  \cf3 tam\cf0 , \cf6 tArray\cf0  &\cf3 fila\cf0 , \cf5 int\cf0  &\cf3 movimientos\cf0 ) \{ \cf2 //version 4, EJECUTA GRUA EFICIENTE\cf0 \
+	\cf5 int\cf0  posIni, posFin, posSoltar;\
+	cout \cf7 <<\cf0  \cf4 "Desde que posicion quieres mover? de 0 a  "\cf0  \cf7 <<\cf0  \cf3 tam\cf0  - 1 \cf7 <<\cf0  endl;\
+	cin \cf7 >>\cf0  posIni;\
+	cout \cf7 <<\cf0  \cf4 "Hasta que posicion?"\cf0  \cf7 <<\cf0  endl;\
+	cin \cf7 >>\cf0  posFin;\
+	cout \cf7 <<\cf0  \cf4 "Donde lo quieres dejar?"\cf0  \cf7 <<\cf0  endl;\
+	cin \cf7 >>\cf0  posSoltar;\
+	grua(\cf3 fila\cf0 , \cf3 tam\cf0 , posIni, posFin, posSoltar, \cf3 movimientos\cf0 );\
+	mostrarFila(\cf3 fila\cf0 , \cf3 tam\cf0 );\
+\}\
+\
+\
+\cf5 void\cf0  ejecutarGruaVO(\cf5 int\cf0  \cf3 tam\cf0 , \cf6 tArray\cf0  &\cf3 fila\cf0 , \cf5 int\cf0  &\cf3 movimientos\cf0 ) \{ \cf2 //version 4, EJECUTA GRUA EFICIENTE\cf0 \
+	\cf5 int\cf0  posIni, posFin, posSoltar;\
+	cout \cf7 <<\cf0  \cf4 "Desde que posicion quieres mover? de 0 a  "\cf0  \cf7 <<\cf0  \cf3 tam\cf0  - 1 \cf7 <<\cf0  endl;\
+	cin \cf7 >>\cf0  posIni;\
+	cout \cf7 <<\cf0  \cf4 "Hasta que posicion?"\cf0  \cf7 <<\cf0  endl;\
+	cin \cf7 >>\cf0  posFin;\
+	cout \cf7 <<\cf0  \cf4 "Donde lo quieres dejar?"\cf0  \cf7 <<\cf0  endl;\
+	cin \cf7 >>\cf0  posSoltar;\
+	grua_VO(\cf3 fila\cf0 , \cf3 tam\cf0 , posIni, posFin, posSoltar, \cf3 movimientos\cf0 );\
+	mostrarFila(\cf3 fila\cf0 , \cf3 tam\cf0 );\
+\}\
+\
+\
+\cf5 void\cf0  ejecutarGuardarFichero(\cf5 const\cf0  \cf6 tArray\cf0  \cf3 fila\cf0 , \cf5 int\cf0  \cf3 tam\cf0 ) \{ \cf2 //opcion 2, GUARDA EN UN FICHERO LOS CAMBIOS REALIZADOS POR LA GRUA Y EXCAVADORA\cf0 \
+	\cf6 ofstream\cf0  archivo;\
+	\cf6 string\cf0  guarda;\
+	cout \cf7 <<\cf0  \cf4 "En que archivo lo quieres guardar? (ponga .txt)"\cf0  \cf7 <<\cf0  endl;\
+	cin \cf7 >>\cf0  guarda;\
+	archivo.open(guarda);\
+	escribirFilaFich(archivo, \cf3 fila\cf0 , \cf3 tam\cf0 );\
+\}\
+\
+\
+\cf5 int\cf0  posHuecoLibreDir(\cf5 const\cf0  \cf6 tArray\cf0  \cf3 fila\cf0 , \cf5 int\cf0  \cf3 tam\cf0 , \cf5 int\cf0  \cf3 posIni\cf0 , \cf5 int\cf0  \cf3 direccion\cf0 ) \{ \cf2 //BUSCA UN HUECO LIBRE EN CUALQUIERA DIRECCION\cf0 \
+	\cf5 int\cf0  x;\
+	\cf5 bool\cf0  libre = \cf5 false\cf0 ;\
+	\cf5 if\cf0  (\cf3 direccion\cf0  == 1) \{\
+		\cf5 for\cf0  (\cf5 int\cf0  n = \cf3 posIni\cf0  + 1; n < \cf3 tam\cf0 ; n++) \{ \cf2 // busca cual es su primera posicion vacia a su derecha\cf0 \
+			\cf5 if\cf0  ((estaVacia(\cf3 fila\cf0 , n)) && (libre == \cf5 false\cf0 )) \{\
+				libre = \cf5 true\cf0 ;\
+				x = n; \cf2 // mete en x la primera posicion donde esta el 0 de la derecha\cf0 \
+			\}\
+		\}\
+\
+		\cf5 if\cf0  (libre == \cf5 true\cf0 ) \{\
+			\cf5 return\cf0  x; \cf2 //devuelve la primera posicion libre desde posIni\cf0 \
+		\}\
+		\cf5 else\cf0  \cf5 return\cf0  \cf3 tam\cf0 ;\
+	\}\
+	\cf5 else\cf0  \{ \cf2 // si es izquierda\cf0 \
+\
+		\cf5 for\cf0  (\cf5 int\cf0  n = \cf3 posIni\cf0  - 1; n > -1; n--) \{ \cf2 // busca cual es la primera posicion vacia a su izquierda\cf0 \
+\
+			\cf5 if\cf0  ((estaVacia(\cf3 fila\cf0 , n)) && (libre == \cf5 false\cf0 )) \{ \cf2 // comprueba si la posicion es 0\cf0 \
+				libre = \cf5 true\cf0 ;\
+				x = n; \cf2 // mete en x la primera posicion donde esta el 0 de la izquierda\cf0 \
+			\}\
+\
+		\}\
+		\cf5 if\cf0  (libre == \cf5 true\cf0 ) \{\
+			\cf5 return\cf0  x; \cf2 //ha encontrado hueco y devuelve la primera posicion libre desde posIni\cf0 \
+		\}\
+		\cf5 else\cf0  \cf5 return\cf0  \cf3 tam\cf0 ; \cf2 // no ha encontrado ningun hueco\cf0 \
+\
+	\}\
+\}\
+\
+\
+\cf5 bool\cf0  excavadora1Dir(\cf6 tArray\cf0  &\cf3 fila\cf0 , \cf5 int\cf0  \cf3 tam\cf0 , \cf5 int\cf0  \cf3 posIni\cf0 , \cf5 int\cf0  \cf3 direccion\cf0 , \cf5 int\cf0  \cf3 numDespla\cf0 ) \{ \cf2 //mueve los bloques hasta el libre\cf0 \
+	\cf5 bool\cf0  mover = \cf5 true\cf0 ;\
+	\cf5 int\cf0  hueco;\
+\
+	\cf5 for\cf0  (\cf5 int\cf0  z = 0; z < \cf3 numDespla\cf0 ; z++) \{ \cf2 // numero de desplazamientos\cf0 \
+\
+		hueco = posHuecoLibreDir(\cf3 fila\cf0 , \cf3 tam\cf0 , \cf3 posIni\cf0 , \cf3 direccion\cf0 ); \cf2 // tenemos el hueco libre\cf0 \
+		\cf5 if\cf0  (hueco == \cf3 tam\cf0 ) \{ \cf2 // si hueco = tam es que no hay hueco\cf0 \
+			mover = \cf5 false\cf0 ; \cf2 // si no ha encontrado hueco\cf0 \
+		\}\
+\
+		\cf5 else\cf0  \{ \cf2 // si ha encnotrado hueco\cf0 \
+\
+			\cf5 if\cf0  (\cf3 direccion\cf0  == 1) \{ \cf2 //mueve todo una posicion a la derecha\cf0 \
+\
+				\cf5 for\cf0  (hueco; hueco > \cf3 posIni\cf0 ; hueco--) \{\
+					\cf3 fila\cf0 [hueco] = \cf3 fila\cf0 [hueco - 1];\
+				\}\
+				\cf3 fila\cf0 [\cf3 posIni\cf0 ] = PROD_NULO;\
+				\cf3 posIni\cf0 ++;\
+\
+\
+			\}\
+\
+			\cf5 else\cf0  \{ \cf2 //mueve todo una posicion a la izquierda\cf0 \
+\
+				\cf5 for\cf0  (hueco; hueco < \cf3 posIni\cf0 ; hueco++) \{\
+					\cf3 fila\cf0 [hueco] = \cf3 fila\cf0 [hueco + 1];\
+				\}\
+				\cf3 fila\cf0 [\cf3 posIni\cf0 ] = PROD_NULO;\
+				\cf3 posIni\cf0 --;\
+\
+			\}\
+\
+\
+\
+\
+		\}\
+\
+	\}\
+	\cf5 return\cf0  mover;\
+\
+\}\
+\
+\cf5 void\cf0  ejecutarExcavadora(\cf6 tArray\cf0  &\cf3 fila\cf0 , \cf5 int\cf0  \cf3 tam\cf0 , \cf5 int\cf0  &\cf3 movimientos\cf0 ) \{ \cf2 //ejecuta la excavadora llamando a excavadora1Dir\cf0 \
+	\cf5 int\cf0  posIni, direccion, numDespla;\
+	cout \cf7 <<\cf0  \cf4 "Desde que posicion quieres hacer el desplazamiento? "\cf0  \cf7 <<\cf0  endl;\
+	cin \cf7 >>\cf0  posIni;\
+	\cf5 while\cf0  (!esPosValida(\cf3 tam\cf0 , posIni)) \{\
+		cout \cf7 <<\cf0  \cf4 "Tiene que ser entre 0 y "\cf0  \cf7 <<\cf0  \cf3 tam\cf0  - 1 \cf7 <<\cf0  endl;\
+		cin \cf7 >>\cf0  posIni;\
+	\}\
+	cout \cf7 <<\cf0  \cf4 "En que direccion? (-1 izquierda 0 1 derecha)"\cf0  \cf7 <<\cf0  endl;\
+	cin \cf7 >>\cf0  direccion;\
+	\cf5 while\cf0  ((direccion != 1) && (direccion != -1)) \{\
+		cout \cf7 <<\cf0  \cf4 "La direccion es 1 o -1"\cf0  \cf7 <<\cf0  endl;\
+		cin \cf7 >>\cf0  direccion;\
+	\}\
+\
+	cout \cf7 <<\cf0  \cf4 "Cuantos desplazamientos quiere hacer?"\cf0  \cf7 <<\cf0  endl;\
+	cin \cf7 >>\cf0  numDespla;\
+	\cf5 while\cf0  (numDespla < 0) \{\
+		cout \cf7 <<\cf0  \cf4 "Tiene que ser mayor que cero, repita"\cf0  \cf7 <<\cf0  endl;\
+		cin \cf7 >>\cf0  numDespla;\
+	\}\
+	excavadora1Dir(\cf3 fila\cf0 , \cf3 tam\cf0 , posIni, direccion, numDespla);\
+	\cf3 movimientos\cf0 ++;\
+	mostrarFila(\cf3 fila\cf0 , \cf3 tam\cf0 );\
+	\cf5 if\cf0  (filaOrdenada(\cf3 fila\cf0 , \cf3 tam\cf0 )) \{\
+		cout \cf7 <<\cf0  \cf4 "Fila ya ordenada, "\cf0 ;\
+	\}\
+	\cf5 else\cf0  cout \cf7 <<\cf0  \cf4 "Fila no ordenada, "\cf0 ;\
+\}\
+\
+\
+\
+\cf5 void\cf0  menu(\cf5 int\cf0  \cf3 tam\cf0 , \cf6 tArray\cf0  &\cf3 fila\cf0 , \cf5 int\cf0  &\cf3 movimientos\cf0 , \cf5 bool\cf0  \cf3 primera\cf0 ) \{\
+	\cf6 ifstream\cf0  fich;\
+	\cf6 string\cf0  ar;\
+	\cf5 int\cf0  opcion, posIni, numDespla;\
+	cout \cf7 <<\cf0  \cf4 "1. - Cargar fila de fichero"\cf0  \cf7 <<\cf0  endl;\
+	cout \cf7 <<\cf0  \cf4 "2. - Guarda fila en fichero"\cf0  \cf7 <<\cf0  endl;\
+	cout \cf7 <<\cf0  \cf4 "3. - Usar grua"\cf0  \cf7 <<\cf0  endl;\
+	cout \cf7 <<\cf0  \cf4 "4. - Usar excavadora"\cf0  \cf7 <<\cf0  endl;\
+	cout \cf7 <<\cf0  \cf4 "5. - Usar grua eficiente"\cf0  \cf7 <<\cf0  endl;\
+	cout \cf7 <<\cf0  \cf4 "0. - Salir"\cf0  \cf7 <<\cf0  endl;\
+	cin \cf7 >>\cf0  opcion;\
+	\cf5 while\cf0  (opcion > 5 || opcion < 0) \{\
+		cout \cf7 <<\cf0  \cf4 "Tiene que ser entre 1 y 5 (0 para abandonar)"\cf0  \cf7 <<\cf0  endl;\
+		cin \cf7 >>\cf0  opcion;\
+	\}\
+	\cf5 switch\cf0  (opcion) \{\
+\
+	\cf5 case\cf0  0:\
+		cout \cf7 <<\cf0  \cf4 "Sales con "\cf0  \cf7 <<\cf0  \cf3 movimientos\cf0  \cf7 <<\cf0  \cf4 " turnos consumidos"\cf0  \cf7 <<\cf0  endl;\
+		cout \cf7 <<\cf0  \cf4 "Adios"\cf0  \cf7 <<\cf0  endl \cf7 <<\cf0  endl;\
+		barraFinal();\
+		\cf5 break\cf0 ;\
+\
+	\cf5 case\cf0  1:\
+		cout \cf7 <<\cf0  \cf4 "Que archivo quiere abrir (ponga.txt)?"\cf0  \cf7 <<\cf0  endl;\
+		cin \cf7 >>\cf0  ar;\
+		fich.open(ar);\
+		\cf5 if\cf0  (fich.is_open()) \{\
+			\cf3 primera\cf0  = \cf5 true\cf0 ;\
+			leerFilaFich(fich, \cf3 fila\cf0 , \cf3 tam\cf0 );\
+			\cf3 movimientos\cf0  = 0;\
+			mostrarFila(\cf3 fila\cf0 , \cf3 tam\cf0 );\
+			menu(\cf3 tam\cf0 , \cf3 fila\cf0 , \cf3 movimientos\cf0 , \cf3 primera\cf0 );\
+		\}\
+		\cf5 else\cf0  \{\
+			cout \cf7 <<\cf0  \cf4 "ERROR: No existe el fichero de lectura "\cf0  \cf7 <<\cf0  ar \cf7 <<\cf0  endl;\
+			menu(\cf3 tam\cf0 , \cf3 fila\cf0 , \cf3 movimientos\cf0 , \cf3 primera\cf0 );\
+		\}\
+		\cf5 break\cf0 ;\
+\
+	\cf5 case\cf0  2:\
+		\cf5 if\cf0  (\cf3 primera\cf0  == \cf5 true\cf0 ) \{\
+			ejecutarGuardarFichero(\cf3 fila\cf0 , \cf3 tam\cf0 );\
+		\}\
+		\cf5 else\cf0  cout \cf7 <<\cf0  \cf4 "Primero tiene que cargar un archivo"\cf0  \cf7 <<\cf0  endl;\
+		menu(\cf3 tam\cf0 , \cf3 fila\cf0 , \cf3 movimientos\cf0 , \cf3 primera\cf0 );\
+\
+		\cf5 break\cf0 ;\
+\
+	\cf5 case\cf0  5:\
+		\cf5 if\cf0  (\cf3 primera\cf0  == \cf5 true\cf0 ) \{\
+			ejecutarGruaVO(\cf3 tam\cf0 , \cf3 fila\cf0 , \cf3 movimientos\cf0 );\
+			\cf5 if\cf0  (filaOrdenada(\cf3 fila\cf0 , \cf3 tam\cf0 )) \{\
+				cout \cf7 <<\cf0  \cf4 "Fila ya ordenada, "\cf0 ;\
+			\}\
+			\cf5 else\cf0  cout \cf7 <<\cf0  \cf4 "Fila no ordenada, "\cf0 ;\
+			cout \cf7 <<\cf0  \cf3 movimientos\cf0  \cf7 <<\cf0  \cf4 " turnos consumidos"\cf0  \cf7 <<\cf0  endl \cf7 <<\cf0  endl \cf7 <<\cf0  endl;\
+			barraFinal();\
+\
+		\}\
+		\cf5 else\cf0  cout \cf7 <<\cf0  \cf4 "Primero tiene que cargar un archivo"\cf0  \cf7 <<\cf0  endl;\
+\
+		menu(\cf3 tam\cf0 , \cf3 fila\cf0 , \cf3 movimientos\cf0 , \cf3 primera\cf0 );\
+\
+		\cf5 break\cf0 ;\
+\
+	\cf5 case\cf0  4:\
+		\cf5 if\cf0  (\cf3 primera\cf0  == \cf5 true\cf0 ) \{\
+			ejecutarExcavadora(\cf3 fila\cf0 , \cf3 tam\cf0 , \cf3 movimientos\cf0 );\
+			cout \cf7 <<\cf0  \cf3 movimientos\cf0  \cf7 <<\cf0  \cf4 " turnos consumidos"\cf0  \cf7 <<\cf0  endl \cf7 <<\cf0  endl \cf7 <<\cf0  endl;\
+			barraFinal();\
+\
+		\}\
+		\cf5 else\cf0   cout \cf7 <<\cf0  \cf4 "Primero tiene que cargar un archivo"\cf0  \cf7 <<\cf0  endl;\
+		menu(\cf3 tam\cf0 , \cf3 fila\cf0 , \cf3 movimientos\cf0 , \cf3 primera\cf0 );\
+		\cf5 break\cf0 ;\
+\
+	\cf5 case\cf0  3:\
+		\cf5 if\cf0  (\cf3 primera\cf0  == \cf5 true\cf0 ) \{\
+			ejecutarGrua(\cf3 tam\cf0 , \cf3 fila\cf0 , \cf3 movimientos\cf0 );\
+			\cf5 if\cf0  (filaOrdenada(\cf3 fila\cf0 , \cf3 tam\cf0 )) \{\
+				cout \cf7 <<\cf0  \cf4 "Fila ya ordenada, "\cf0 ;\
+			\}\
+			\cf5 else\cf0  cout \cf7 <<\cf0  \cf4 "Fila no ordenada, "\cf0 ;\
+			cout \cf7 <<\cf0  \cf3 movimientos\cf0  \cf7 <<\cf0  \cf4 " turnos consumidos"\cf0  \cf7 <<\cf0  endl \cf7 <<\cf0  endl \cf7 <<\cf0  endl;\
+			barraFinal();\
+		\}\
+		\cf5 else\cf0  cout \cf7 <<\cf0  \cf4 "Primero tiene que cargar un archivo"\cf0  \cf7 <<\cf0  endl;\
+		menu(\cf3 tam\cf0 , \cf3 fila\cf0 , \cf3 movimientos\cf0 , \cf3 primera\cf0 );\
+		\cf5 break\cf0 ;\
+\
+\
+	\}\
+\
+\
+\}\
+\
+\
+\cf5 bool\cf0  sonPosicionesPosiblesGrua(\cf5 int\cf0  \cf3 tam\cf0 , \cf5 int\cf0  \cf3 posIni\cf0 , \cf5 int\cf0  \cf3 posFin\cf0 , \cf5 int\cf0  \cf3 posSoltar\cf0 ) \{\
+	\cf5 bool\cf0  posible = \cf5 true\cf0 ;\
+	\cf5 int\cf0  distancia;\
+	distancia = \cf3 posFin\cf0  - (\cf3 posIni\cf0  - 1);\
+\
+	\cf5 if\cf0  (!esPosValida(\cf3 tam\cf0 , \cf3 posIni\cf0 )) \{\
+		cout \cf7 <<\cf0  \cf4 "No existe esa posicion de inicio"\cf0  \cf7 <<\cf0  endl;\
+		posible = \cf5 false\cf0 ;\
+	\}\
+\
+	\cf5 if\cf0  (!esPosValida(\cf3 tam\cf0 , \cf3 posFin\cf0 )) \{\
+		cout \cf7 <<\cf0  \cf4 "No existe esa posicion final"\cf0  \cf7 <<\cf0  endl;\
+		posible = \cf5 false\cf0 ;\
+	\}\
+\
+	\cf5 if\cf0  (\cf3 posIni\cf0  > \cf3 posFin\cf0 ) \{\
+		cout \cf7 <<\cf0  \cf4 "La posicion final tiene que ser mayor que la inicial"\cf0  \cf7 <<\cf0  endl;\
+		posible = \cf5 false\cf0 ;\
+	\}\
+\
+	\cf5 if\cf0  (\cf3 posSoltar\cf0  < 0 || \cf3 posSoltar\cf0  > \cf3 tam\cf0  - 1) \{\
+		cout \cf7 <<\cf0  \cf4 "Tienes que soltarlo entre el 0 y "\cf0  \cf7 <<\cf0  \cf3 tam\cf0  - 1 \cf7 <<\cf0  endl;\
+		posible = \cf5 false\cf0 ;\
+	\}\
+\
+\
+	\cf5 if\cf0  (((distancia + \cf3 posSoltar\cf0 ) <= \cf3 tam\cf0  - 1) && (posible == \cf5 true\cf0 )) \{\
+		posible = \cf5 true\cf0 ;\
+	\}\
+	\cf5 return\cf0  posible; \cf2 //devuelve posible = true si encaja en el array y si ini es menos k fin.\cf0 \
+\}\
+\
+\cf5 bool\cf0  esPosibleGrua(\cf5 const\cf0  \cf6 tArray\cf0  \cf3 fila\cf0 , \cf5 int\cf0  \cf3 tam\cf0 , \cf5 int\cf0  \cf3 posIni\cf0 , \cf5 int\cf0  \cf3 posFin\cf0 , \cf5 int\cf0  \cf3 posSoltar\cf0 ) \{ \cf2 //comprueba si se pisan\cf0 \
+	\cf5 int\cf0  distancia;\
+	\cf5 int\cf0  empieza = \cf3 posIni\cf0 ;\
+	\cf5 int\cf0  suelta = \cf3 posSoltar\cf0 ;\
+	\cf5 bool\cf0  pisar = \cf5 true\cf0 ;\
+	\cf5 if\cf0  (sonPosicionesPosiblesGrua(\cf3 tam\cf0 , \cf3 posIni\cf0 , \cf3 posFin\cf0 , \cf3 posSoltar\cf0 )) \{ \cf2 // si no se sale del rango del array continua\cf0 \
+		distancia = \cf3 posFin\cf0  - (\cf3 posIni\cf0  - 1); \cf2 // calcula la distancia de lo que quieres mover\cf0 \
+		\cf5 for\cf0  (\cf5 int\cf0  n = 0; n < distancia; n++) \{\
+			\cf5 if\cf0  ((!estaVacia(\cf3 fila\cf0 , \cf3 posIni\cf0 ) && !estaVacia(\cf3 fila\cf0 , \cf3 posSoltar\cf0 )) && (pisar == \cf5 true\cf0 )) \{ \cf2 //si una de las dos esta vacia o las dos no entra en el if porque siempre se va a poder hacer\cf0 \
+				\cf5 if\cf0  (((\cf3 posSoltar\cf0  <= \cf3 posFin\cf0 ) && (\cf3 posFin\cf0  >= \cf3 posIni\cf0 ) && (\cf3 posIni\cf0  < \cf3 posSoltar\cf0 ) || (suelta <= empieza) && (\cf3 posSoltar\cf0  >= empieza))) \{ \cf2 //ROTACION HACIA DERECHA || ROTACION HACIA LA IZQUIERDA\cf0 \
+					pisar = \cf5 true\cf0 ; \cf2 // es posicion valida si entra en el if de arriba (true)\cf0 \
+				\}\
+				\cf5 else\cf0  pisar = \cf5 false\cf0 ; \cf2 // estra en el false si no es rotacion y detecta que no es posible el movimiento\cf0 \
+			\}\
+			\cf3 posSoltar\cf0 ++;\
+			\cf3 posIni\cf0 ++;\
+		\}\
+\
+	\}\
+	\cf5 else\cf0  pisar = \cf5 false\cf0 ;\
+\
+	\cf5 return\cf0  pisar;\
+\}\
+\
+\cf5 bool\cf0  grua(\cf6 tArray\cf0  &\cf3 fila\cf0 , \cf5 int\cf0  \cf3 tam\cf0 , \cf5 int\cf0  \cf3 posIni\cf0 , \cf5 int\cf0  \cf3 posFin\cf0 , \cf5 int\cf0  \cf3 posSoltar\cf0 , \cf5 int\cf0  &\cf3 movimientos\cf0 ) \{\
+	\cf6 tArray\cf0  aux;\
+	\cf5 int\cf0  distancia;\
+	\cf5 int\cf0  meter = \cf3 posIni\cf0 ;\
+	\cf5 int\cf0  soltar = \cf3 posSoltar\cf0 ;\
+	distancia = \cf3 posFin\cf0  - (\cf3 posIni\cf0  - 1);\
+	\cf5 bool\cf0  realizar = \cf5 true\cf0 ;\
+\
+	\cf5 if\cf0  (esPosibleGrua(\cf3 fila\cf0 , \cf3 tam\cf0 , \cf3 posIni\cf0 , \cf3 posFin\cf0 , \cf3 posSoltar\cf0 )) \{\
+\
+		\cf3 movimientos\cf0 ++;\
+\
+		\cf5 for\cf0  (\cf5 int\cf0  n = 0; n < distancia; n++) \{\
+			aux[n] = \cf3 fila\cf0 [meter];\
+			\cf3 fila\cf0 [meter] = PROD_NULO;\
+			meter++;\
+			\}\
+\
+		\cf5 for\cf0  (\cf5 int\cf0  n = 0; n < distancia; n++) \{\
+\
+			\cf5 if\cf0  (\cf3 fila\cf0 [\cf3 posSoltar\cf0 ] == 0 || (\cf3 posSoltar\cf0  == \cf3 posIni\cf0 )) \{\
+			\cf3 fila\cf0 [\cf3 posSoltar\cf0 ] = aux[n];\
+				\}\
+		\cf3 posSoltar\cf0 ++;\
+			\}\
+\
+		\cf5 if\cf0  (\cf3 posIni\cf0  == soltar) \{\
+			cout \cf7 <<\cf0  \cf4 "Lo has dejado en el mismo sitio, pero te sumo el movimiento"\cf0  \cf7 <<\cf0  endl;\
+			\}\
+\
+		\}\
+\
+\
+\
+	\cf5 else\cf0  \{\
+		cout \cf7 <<\cf0  \cf4 "No ha sido posible"\cf0  \cf7 <<\cf0  endl;\
+		realizar = \cf5 false\cf0 ;\
+		\}\
+\cf5 return\cf0  realizar;\
+\}\
+\
+\
+\
+\cf5 bool\cf0  filaOrdenada(\cf5 const\cf0  \cf6 tArray\cf0  \cf3 fila\cf0 , \cf5 int\cf0  \cf3 tam\cf0 ) \{ \cf2 //Comprueba que el array quede ordenado despues de cada cambio\cf0 \
+	\cf6 tArray\cf0  aux;\
+	\cf5 bool\cf0  ordenado = \cf5 true\cf0 ;\
+	\cf5 int\cf0  z = 0;\
+	\cf5 for\cf0  (\cf5 int\cf0  n = 0; n < \cf3 tam\cf0 ; n++) \{\
+\
+		\cf5 if\cf0  (!estaVacia(\cf3 fila\cf0 , n)) \{\
+			aux[z] = \cf3 fila\cf0 [n];\
+			z++;\
+		\}\
+\
+		\cf5 for\cf0  (\cf5 int\cf0  n = 0; n < z - 1; n++) \{\
+			\cf5 if\cf0  (aux[n] > aux[n + 1] && ordenado == \cf5 true\cf0 ) \{\
+				ordenado = \cf5 false\cf0 ;\
+			\}\
+		\}\
+\
+	\}\
+	\cf5 return\cf0  ordenado;\
+\}\
+\
+\
+\
+\
+\
+\cf5 bool\cf0  grua_VO(\cf6 tArray\cf0  &\cf3 fila\cf0 , \cf5 int\cf0  \cf3 tam\cf0 , \cf5 int\cf0  \cf3 posIni\cf0 , \cf5 int\cf0  \cf3 posFin\cf0 , \cf5 int\cf0  \cf3 posSoltar\cf0 , \cf5 int\cf0  &\cf3 movimientos\cf0 ) \{\
+	\cf5 int\cf0  empieza = \cf3 posIni\cf0 , suelta = \cf3 posSoltar\cf0 ;\
+	\cf5 int\cf0  distancia;\
+	distancia = \cf3 posFin\cf0  - (\cf3 posIni\cf0  - 1);\
+	\cf5 bool\cf0  realizar = \cf5 true\cf0 , mismoSitio = \cf5 false\cf0 ;\
+	\cf5 if\cf0  (esPosibleGrua(\cf3 fila\cf0 , \cf3 tam\cf0 , \cf3 posIni\cf0 , \cf3 posFin\cf0 , \cf3 posSoltar\cf0 )) \{ \cf2 //aqui comprueba si el movimiento es posible hacerlo, es decir, si no se salen de los rangos y no se pisan unos a otros\cf0 \
+\
+		\cf3 movimientos\cf0 ++;\
+\
+\
+		\cf5 if\cf0  (\cf3 posSoltar\cf0  >= \cf3 posIni\cf0  - distancia - 1 && \cf3 posSoltar\cf0  < \cf3 posIni\cf0 ) \{ \cf2 // si rotan hacia la izquierda\cf0 \
+\
+			\cf5 for\cf0  (\cf5 int\cf0  n = 0; n < distancia; n++) \{\
+				\cf3 fila\cf0 [\cf3 posSoltar\cf0 ] = \cf3 fila\cf0 [\cf3 posIni\cf0 ];\
+				\cf3 fila\cf0 [\cf3 posIni\cf0 ] = PROD_NULO;\
+				\cf3 posIni\cf0 ++;\
+				\cf3 posSoltar\cf0 ++;\
+			\}\
+\
+		\}\
+\
+		\cf5 else\cf0  \{\
+\
+			\cf5 for\cf0  (\cf5 int\cf0  n = 0; n < distancia; n++) \{ \cf2 // si rotan hacia la derecha o solo se desplazan por huecos libres \cf0 \
+				\cf5 if\cf0  (!estaVacia(\cf3 fila\cf0 , \cf3 posFin\cf0 )) \{ \cf2 // si la posicion que se mueve es un 0, que no la cambie por la del destino\cf0 \
+					\cf3 fila\cf0 [\cf3 posFin\cf0  + (\cf3 posSoltar\cf0  - \cf3 posIni\cf0 )] = \cf3 fila\cf0 [\cf3 posFin\cf0 ];\
+				\}\
+				\cf5 if\cf0  (empieza == suelta) \{ \cf2 // si lo dejas en el mismo sitio solo pone mismoSitio a true y no los pone a 0\cf0 \
+					mismoSitio = \cf5 true\cf0 ;\
+				\}\
+				\cf5 else\cf0  \cf3 fila\cf0 [\cf3 posFin\cf0 ] = PROD_NULO;\
+				\cf3 posFin\cf0 --;\
+			\}\
+		\}\
+\
+	\}\
+\
+	\cf5 else\cf0  \{\
+		cout \cf7 <<\cf0  \cf4 "No ha sido posible"\cf0  \cf7 <<\cf0  endl;\
+		realizar = \cf5 false\cf0 ;\
+	\}\
+\
+	\cf5 if\cf0  (mismoSitio == \cf5 true\cf0 ) \{ \cf2 // si esta en true significa que lo has dejado en el mismo sitio y te lo dice\cf0 \
+		cout \cf7 <<\cf0  \cf4 "Lo has dejado en el mismo sitio pero te sumo el movimiento"\cf0  \cf7 <<\cf0  endl;\
+\
+	\}\
+	\cf5 return\cf0  realizar;\
+\}\
+\
+\cf5 void\cf0  barraFinal() \{\
+	cout \cf7 <<\cf0  \cf4 "*******************************************************************"\cf0  \cf7 <<\cf0  endl \cf7 <<\cf0  endl;\
+\}}
